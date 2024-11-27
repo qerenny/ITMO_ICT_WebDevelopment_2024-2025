@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="63d1a369-b086-4d24-905e-9d260d4d50eb" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/task_3/server.py" beforeDir="false" afterPath="$PROJECT_DIR$/task_3/server.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/task_4/client1.py" beforeDir="false" afterPath="$PROJECT_DIR$/task_4/client1.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/task_4/client2.py" beforeDir="false" afterPath="$PROJECT_DIR$/task_4/client2.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/task_4/client3.py" beforeDir="false" afterPath="$PROJECT_DIR$/task_4/client3.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/task_4/server.py" beforeDir="false" afterPath="$PROJECT_DIR$/task_4/server.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/task_5/txt.txt" beforeDir="false" afterPath="$PROJECT_DIR$/task_5/txt.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/task_5/web_server.py" beforeDir="false" afterPath="$PROJECT_DIR$/task_5/web_server.py" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../../../.." />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 0
+}</component>
+  <component name="ProjectId" id="2lv8I3NINZnGW61T9ZEq9nejTsL" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python.client1.executor": "Run",
+    "Python.client2.executor": "Run",
+    "Python.client3.executor": "Run",
+    "Python.server.executor": "Run",
+    "Python.web_server.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "/Users/qerennyth/Documents/GitHub/ITMO_ICT_WebDevelopment_2024-2025/students/k3341/Korchagin_Vadim/Lr1",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "preferences.lookFeel",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-d6986cc7102b-7c0b70fcd90d-JavaScript-PY-242.21829.153" />
+        <option value="bundled-python-sdk-464836ebc622-b74155a9e76b-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-242.21829.153" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="63d1a369-b086-4d24-905e-9d260d4d50eb" name="Changes" comment="" />
+      <created>1726049107924</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1726049107924</updated>
+      <workItem from="1726049109264" duration="26000" />
+      <workItem from="1726049140527" duration="239000" />
+      <workItem from="1726477301924" duration="5878000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/Lr1$web_server.coverage" NAME="web_server Coverage Results" MODIFIED="1726482058876" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/task_5" />
+    <SUITE FILE_PATH="coverage/Lr1$client3.coverage" NAME="client3 Coverage Results" MODIFIED="1726481291272" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/task_4" />
+    <SUITE FILE_PATH="coverage/Lr1$server.coverage" NAME="server Coverage Results" MODIFIED="1726481285722" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/task_4" />
+    <SUITE FILE_PATH="coverage/Lr1$client1.coverage" NAME="client1 Coverage Results" MODIFIED="1726481287813" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/task_4" />
+    <SUITE FILE_PATH="coverage/Lr1$client2.coverage" NAME="client2 Coverage Results" MODIFIED="1726481289833" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/task_4" />
+  </component>
+</project>
