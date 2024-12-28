@@ -1,160 +1,252 @@
 <template>
-    <v-container class="mt-4">
-      <h2>Клиенты</h2>
-      <v-text-field
-        v-model="searchCity"
-        label="Фильтр по городу (city_of_origin)"
-        @input="fetchClients"
-      ></v-text-field>
-  
-      <v-data-table
-        :headers="headers"
-        :items="clients"
-        class="elevation-1 mt-4"
+  <v-container>
+    <h2 class="mb-4">Клиенты</h2>
+
+    <!-- Кнопка для вызова count_by_city -->
+    <v-card class="mb-4 pa-2 elevated-card">
+      <v-card-title class="text-h6">Поиск клиентов по городу</v-card-title>
+      <v-card-text>
+        <v-text-field
+          v-model="cityParam"
+          label="Город"
+        ></v-text-field>
+        <v-btn variant="outlined" color="primary" @click="countByCity">
+          Посчитать
+        </v-btn>
+      </v-card-text>
+      <v-card-subtitle v-if="cityResult !== null">
+        Найдено клиентов: {{ cityResult }}
+      </v-card-subtitle>
+    </v-card>
+
+    <!-- Кнопка для вызова clients_shared_stay -->
+    <v-card class="mb-4 pa-2 elevated-card">
+      <v-card-title class="text-h6">Пересекающиеся проживания</v-card-title>
+      <v-card-text>
+        <v-text-field
+          v-model="sharedClientId"
+          label="client_id"
+          type="number"
+        ></v-text-field>
+        <v-btn variant="outlined" color="primary" @click="clientsSharedStay">
+          Посмотреть
+        </v-btn>
+      </v-card-text>
+      <v-card-subtitle v-if="sharedClients.length > 0">
+        <div class="mt-2">
+          <div v-for="c in sharedClients" :key="c.client_id">
+            {{ c.last_name }} {{ c.first_name }} (ID={{ c.client_id }})
+          </div>
+        </div>
+      </v-card-subtitle>
+    </v-card>
+
+    <v-btn
+      variant="outlined"
+      color="primary"
+      class="mb-4"
+      @click="openCreateDialog"
+    >
+      Добавить клиента
+    </v-btn>
+
+    <v-row>
+      <v-col
+        v-for="client in clients"
+        :key="client.client_id"
+        cols="12"
+        md="6"
+        lg="4"
       >
-        <template #item.actions="{ item }">
-          <v-btn small @click="editClient(item)">Ред.</v-btn>
-          <v-btn small color="error" @click="deleteClient(item.client_id)">Удалить</v-btn>
-        </template>
-      </v-data-table>
-  
-      <v-btn color="primary" class="mt-4" @click="openCreateDialog">Добавить клиента</v-btn>
-  
-      <!-- Диалог создания/редактирования -->
-      <v-dialog v-model="dialog" max-width="600px">
-        <v-card>
-          <v-card-title>
-            {{ clientForm.client_id ? 'Редактирование клиента' : 'Новый клиент' }}
-          </v-card-title>
-          <v-card-text>
-            <v-text-field
-              label="Паспорт"
-              v-model="clientForm.passport_number"
-            ></v-text-field>
-            <v-text-field
-              label="Фамилия"
-              v-model="clientForm.last_name"
-            ></v-text-field>
-            <v-text-field
-              label="Имя"
-              v-model="clientForm.first_name"
-            ></v-text-field>
-            <v-text-field
-              label="Отчество"
-              v-model="clientForm.middle_name"
-            ></v-text-field>
-            <v-text-field
-              label="Город"
-              v-model="clientForm.city_of_origin"
-            ></v-text-field>
-          </v-card-text>
+        <v-card class="elevated-card mb-4 pa-2">
+          <v-card-item>
+            <div>
+              <div class="text-h6">{{ client.last_name }} {{ client.first_name }}</div>
+              <div class="text-subtitle-2 mb-2">Паспорт: {{ client.passport_number }}</div>
+              <div class="text-caption">Город: {{ client.city_of_origin }}</div>
+            </div>
+          </v-card-item>
           <v-card-actions>
-            <v-btn color="primary" @click="createOrUpdateClient">Сохранить</v-btn>
-            <v-btn text @click="dialog = false">Отмена</v-btn>
+            <v-btn
+              variant="outlined"
+              color="primary"
+              @click="editClient(client)"
+            >
+              Редактировать
+            </v-btn>
+            <v-btn
+              variant="outlined"
+              color="error"
+              @click="deleteClient(client.client_id)"
+            >
+              Удалить
+            </v-btn>
           </v-card-actions>
         </v-card>
-      </v-dialog>
-    </v-container>
-  </template>
-  
-  <script>
-  import axios from 'axios'
-  
-  export default {
-    name: 'Clients',
-    data() {
-      return {
-        clients: [],
-        searchCity: '',
-        dialog: false,
-        clientForm: {
-          client_id: null,
-          passport_number: '',
-          last_name: '',
-          first_name: '',
-          middle_name: '',
-          city_of_origin: ''
-        },
-        headers: [
-          { text: 'ID', value: 'client_id' },
-          { text: 'Фамилия', value: 'last_name' },
-          { text: 'Имя', value: 'first_name' },
-          { text: 'Паспорт', value: 'passport_number' },
-          { text: 'Город', value: 'city_of_origin' },
-          { text: 'Действия', value: 'actions', sortable: false }
-        ]
+      </v-col>
+    </v-row>
+
+    <!-- Диалог -->
+    <v-dialog
+      v-model="dialog"
+      max-width="600px"
+      persistent
+    >
+      <v-card class="dialog-card pa-6">
+        <v-card-title class="dialog-title text-h5">
+          {{ clientForm.client_id ? 'Редактирование клиента' : 'Новый клиент' }}
+        </v-card-title>
+        <v-card-text>
+          <v-text-field
+            v-model="clientForm.passport_number"
+            label="Паспорт"
+          ></v-text-field>
+          <v-text-field
+            v-model="clientForm.last_name"
+            label="Фамилия"
+          ></v-text-field>
+          <v-text-field
+            v-model="clientForm.first_name"
+            label="Имя"
+          ></v-text-field>
+          <v-text-field
+            v-model="clientForm.middle_name"
+            label="Отчество"
+          ></v-text-field>
+          <v-text-field
+            v-model="clientForm.city_of_origin"
+            label="Город"
+          ></v-text-field>
+        </v-card-text>
+        <v-card-actions>
+          <v-btn variant="outlined" color="primary" @click="createOrUpdateClient">
+            Сохранить
+          </v-btn>
+          <v-btn variant="outlined" color="error" @click="dialog = false">
+            Отмена
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+  </v-container>
+</template>
+
+<script>
+import axios from 'axios'
+
+export default {
+  name: 'Clients',
+  data() {
+    return {
+      clients: [],
+      dialog: false,
+      clientForm: {
+        client_id: null,
+        passport_number: '',
+        last_name: '',
+        first_name: '',
+        middle_name: '',
+        city_of_origin: ''
+      },
+      // Для count_by_city
+      cityParam: '',
+      cityResult: null,
+
+      // Для clients_shared_stay
+      sharedClientId: '',
+      sharedClients: []
+    }
+  },
+  async created() {
+    this.fetchClients()
+  },
+  methods: {
+    async fetchClients() {
+      const token = localStorage.getItem('token')
+      try {
+        const response = await axios.get('http://127.0.0.1:8000/api/clients/', {
+          headers: { Authorization: `Token ${token}` }
+        })
+        this.clients = response.data.results ? response.data.results : response.data
+      } catch (error) {
+        console.error(error)
       }
     },
-    async created() {
-      await this.fetchClients()
+    openCreateDialog() {
+      this.clearForm()
+      this.dialog = true
     },
-    methods: {
-      async fetchClients() {
-        try {
-          const token = localStorage.getItem('token')
-          let url = 'http://127.0.0.1:8000/api/clients/'
-          if (this.searchCity) {
-            // вариант 1: filterset_fields = ['city_of_origin']
-            url += `?city_of_origin=${this.searchCity}`
-          }
-          // вариант 2: ?search=... (если включён SearchFilter для city_of_origin)
-          const response = await axios.get(url, {
-            headers: { Authorization: `Token ${token}` }
+    clearForm() {
+      this.clientForm = {
+        client_id: null,
+        passport_number: '',
+        last_name: '',
+        first_name: '',
+        middle_name: '',
+        city_of_origin: ''
+      }
+    },
+    editClient(client) {
+      this.clientForm = { ...client }
+      this.dialog = true
+    },
+    async createOrUpdateClient() {
+      const token = localStorage.getItem('token')
+      try {
+        if (this.clientForm.client_id) {
+          await axios.put(
+            `http://127.0.0.1:8000/api/clients/${this.clientForm.client_id}/`,
+            this.clientForm,
+            { headers: { Authorization: `Token ${token}` }
           })
-          this.clients = response.data
-        } catch (error) {
-          console.error(error)
-        }
-      },
-      openCreateDialog() {
-        this.clearForm()
-        this.dialog = true
-      },
-      clearForm() {
-        this.clientForm = {
-          client_id: null,
-          passport_number: '',
-          last_name: '',
-          first_name: '',
-          middle_name: '',
-          city_of_origin: ''
-        }
-      },
-      editClient(client) {
-        this.clientForm = { ...client }
-        this.dialog = true
-      },
-      async createOrUpdateClient() {
-        const token = localStorage.getItem('token')
-        try {
-          if (this.clientForm.client_id) {
-            // update
-            await axios.put(`http://127.0.0.1:8000/api/clients/${this.clientForm.client_id}/`, this.clientForm, {
-              headers: { Authorization: `Token ${token}` }
-            })
-          } else {
-            // create
-            await axios.post('http://127.0.0.1:8000/api/clients/', this.clientForm, {
-              headers: { Authorization: `Token ${token}` }
-            })
-          }
-          this.dialog = false
-          this.fetchClients()
-        } catch (error) {
-          console.error(error)
-        }
-      },
-      async deleteClient(clientId) {
-        const token = localStorage.getItem('token')
-        try {
-          await axios.delete(`http://127.0.0.1:8000/api/clients/${clientId}/`, {
-            headers: { Authorization: `Token ${token}` }
+        } else {
+          await axios.post(
+            `http://127.0.0.1:8000/api/clients/`,
+            this.clientForm,
+            { headers: { Authorization: `Token ${token}` }
           })
-          this.fetchClients()
-        } catch (error) {
-          console.error(error)
         }
+        this.dialog = false
+        this.fetchClients()
+      } catch (error) {
+        console.error(error)
+      }
+    },
+    async deleteClient(clientId) {
+      const token = localStorage.getItem('token')
+      try {
+        await axios.delete(`http://127.0.0.1:8000/api/clients/${clientId}/`, {
+          headers: { Authorization: `Token ${token}` }
+        })
+        this.fetchClients()
+      } catch (error) {
+        console.error(error)
+      }
+    },
+    async countByCity() {
+      const token = localStorage.getItem('token')
+      if (!this.cityParam) return
+      try {
+        const resp = await axios.get(`http://127.0.0.1:8000/api/clients/count_by_city/?city=${this.cityParam}`, {
+          headers: { Authorization: `Token ${token}` }
+        })
+        this.cityResult = resp.data.client_count
+      } catch (error) {
+        console.error(error)
+      }
+    },
+    async clientsSharedStay() {
+      const token = localStorage.getItem('token')
+      if (!this.sharedClientId) return
+      try {
+        const resp = await axios.get(`http://127.0.0.1:8000/api/clients/clients_shared_stay/?client_id=${this.sharedClientId}`, {
+          headers: { Authorization: `Token ${token}` }
+        })
+        this.sharedClients = resp.data
+      } catch (error) {
+        console.error(error)
       }
     }
   }
-  </script>
+}
+</script>

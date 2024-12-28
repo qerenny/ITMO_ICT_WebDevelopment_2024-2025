@@ -1,0 +1,32 @@
+/* src/assets/hotel-styles.css */
+
+/* Общие стили для карточек c приподнятым видом */
+.elevated-card {
+    border-radius: 10px;
+    /* Можно добавить общую тень, если не используем inline style */
+    box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.3);
+  }
+  
+/* Стили для больших диалогов */
+.dialog-card {
+    box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.5);
+    border-radius: 16px;
+    background-color: #ffffff;
+}
+
+/* Можно описать стили для заголовков */
+.dialog-title {
+    color: #1867C0; /* Синий цвет */
+}
+
+/* Пример общих отступов для карточек */
+.card-padding {
+    padding: 1.5rem; /* Пример */
+}
+
+/* Можно добавить класс для text-h5 в Vuetify, если хотим переопределить */
+.my-dialog-title {
+    font-size: 1.3rem;
+    font-weight: bold;
+}
+

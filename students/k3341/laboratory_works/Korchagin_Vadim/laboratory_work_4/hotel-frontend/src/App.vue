@@ -1,11 +1,11 @@
 <template>
   <v-app>
-    <!-- Показываем панель, только если пользователь авторизован -->
+    <!-- Навигация только если авторизован -->
     <NavigationBar v-if="userLoggedIn" />
     <v-main>
-      <!-- <v-container fluid class="pa-4"> -->
+      <v-container fluid class="pa-4">
         <router-view />
-      <!-- </v-container> -->
+      </v-container>
     </v-main>
   </v-app>
 </template>
@@ -25,14 +25,12 @@ export default {
     this.checkAuth()
   },
   watch: {
-    // Будем следить за сменой маршрута
     $route() {
       this.checkAuth()
     }
   },
   methods: {
     checkAuth() {
-      // Если токен в localStorage есть — пользователь авторизован
       const token = localStorage.getItem('token')
       this.userLoggedIn = !!token
     }
