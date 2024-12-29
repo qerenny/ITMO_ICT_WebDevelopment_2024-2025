@@ -66,16 +66,18 @@
           <v-select
             v-model="scheduleForm.staff_id"
             :items="staffList"
+            item-title="fullName"
+            item-value="staff_id"
+            :return-object="false"
             label="Сотрудник"
-            :item-text="(s) => s.last_name + ' ' + s.first_name"
-            :item-value="(s) => s.staff_id"
           />
           <v-select
             v-model="scheduleForm.room_id"
             :items="roomsList"
+            item-title="roomDisplay"
+            item-value="room_id"
             label="Комната"
-            :item-text="(r) => 'Room ' + r.room_id"
-            :item-value="(r) => r.room_id"
+            :return-object="false"
             :allow-empty="true"
           />
           <v-text-field
@@ -143,7 +145,10 @@ export default {
         const res = await axios.get('http://127.0.0.1:8000/api/staff/', {
           headers: { Authorization: `Token ${token}` }
         })
-        this.staffList = res.data
+        this.staffList = res.data.map(stuff => ({
+          ...stuff,
+          fullName: `${stuff.last_name} ${stuff.first_name}` || 'NoName'
+        }))
       } catch (error) {
         console.error(error)
       }
@@ -154,7 +159,10 @@ export default {
         const res = await axios.get('http://127.0.0.1:8000/api/rooms/', {
           headers: { Authorization: `Token ${token}` }
         })
-        this.roomsList = res.data
+        this.roomsList = res.data.map(room => ({
+          ...room,
+          roomDisplay: `Room ${room.room_id}`
+        }))
       } catch (error) {
         console.error(error)
       }

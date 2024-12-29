@@ -100,25 +100,28 @@
           <v-select
             v-model="cleaningForm.cleaning_schedule_id"
             :items="scheduleList"
-            :item-text="(cs) => 'ID ' + cs.cleaning_schedule_id"
-            :item-value="(cs) => cs.cleaning_schedule_id"
+            item-title="cleaningSchedule"
+            item-value="cleaning_schedule_id"
+            :return-object="false"
             label="Cleaning Schedule ID"
           />
           <!-- staff -->
           <v-select
             v-model="cleaningForm.staff_id"
             :items="staffList"
-            :item-text="(s) => s.last_name + ' ' + s.first_name"
-            :item-value="(s) => s.staff_id"
+            item-title="fullName"
+            item-value="staff_id"
+            :return-object="false"
             label="Сотрудник"
           />
           <!-- room -->
           <v-select
             v-model="cleaningForm.room_id"
             :items="roomsList"
-            :item-text="(r) => 'Room ' + r.room_id"
-            :item-value="(r) => r.room_id"
+            item-title="roomDisplay"
+            item-value="room_id"
             label="Комната"
+            :return-object="false"
             :allow-empty="true"
           />
           <v-text-field
@@ -175,10 +178,10 @@ export default {
     }
   },
   async created() {
-    this.fetchCleanings()
-    this.fetchStaff()
-    this.fetchRooms()
-    this.fetchSchedules()
+    await this.fetchCleanings()
+    await this.fetchStaff()
+    await this.fetchRooms()
+    await this.fetchSchedules()
   },
   methods: {
     async fetchCleanings() {
@@ -197,7 +200,10 @@ export default {
       try {
         const resp = await axios.get('http://127.0.0.1:8000/api/cleaning-schedules/', {
           headers: { Authorization: `Token ${token}` }        })
-        this.scheduleList = resp.data.results ? resp.data.results : resp.data
+        this.scheduleList = resp.data.map(item => ({
+          ...item,
+          cleaningSchedule: `${item.cleaning_schedule_id}`,
+        }))
       } catch (error) {
         console.error(error)
       }
@@ -208,7 +214,10 @@ export default {
         const res = await axios.get('http://127.0.0.1:8000/api/staff/', {
           headers: { Authorization: `Token ${token}` }
         })
-        this.staffList = res.data.results ? res.data.results : res.data
+        this.staffList = res.data.map(stuff => ({
+          ...stuff,
+          fullName: `${stuff.last_name} ${stuff.first_name}` || 'NoName'
+        }))
       } catch (error) {
         console.error(error)
       }
@@ -219,7 +228,10 @@ export default {
         const res = await axios.get('http://127.0.0.1:8000/api/rooms/', {
           headers: { Authorization: `Token ${token}` }
         })
-        this.roomsList = res.data.results ? res.data.results : res.data
+        this.roomsList = res.data.map(room => ({
+          ...room,
+          roomDisplay: `Room ${room.room_id}`
+        }))
       } catch (error) {
         console.error(error)
       }

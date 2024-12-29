@@ -24,30 +24,22 @@
               <div class="text-h6">ID: {{ stay.stay_id }}</div>
               <div class="text-subtitle-2 mb-2">
                 Клиент: {{ stay.client?.last_name }} {{ stay.client?.first_name }}
-                (<strong>ID {{ stay.client?.client_id }}</strong>)
+                (ID {{ stay.client?.client_id }})
               </div>
               <div class="text-caption">
-                Номер: {{ stay.room?.room_id }}  
+                Номер: {{ stay.room?.room_id }}
               </div>
               <div class="mt-2">
-                Дата заезда: {{ stay.check_in_date }} <br>
+                Дата заезда: {{ stay.check_in_date }}<br/>
                 Дата выезда: {{ stay.check_out_date }}
               </div>
             </div>
           </v-card-item>
           <v-card-actions>
-            <v-btn
-              variant="outlined"
-              color="primary"
-              @click="editStay(stay)"
-            >
+            <v-btn variant="outlined" color="primary" @click="editStay(stay)">
               Редактировать
             </v-btn>
-            <v-btn
-              variant="outlined"
-              color="error"
-              @click="deleteStay(stay.stay_id)"
-            >
+            <v-btn variant="outlined" color="error" @click="deleteStay(stay.stay_id)">
               Удалить
             </v-btn>
           </v-card-actions>
@@ -60,25 +52,27 @@
       v-model="dialog"
       max-width="600px"
       persistent
-      >
+    >
       <v-card class="dialog-card pa-6">
         <v-card-title class="my-dialog-title dialog-title">
           {{ stayForm.stay_id ? 'Редактирование проживания' : 'Новое проживание' }}
         </v-card-title>
         <v-card-text>
           <v-select
-            label="Клиент"
             v-model="stayForm.client_id"
             :items="availableClients"
-            :item-text="(c) => c.last_name + ' ' + c.first_name"
-            :item-value="(c) => c.client_id"
+            item-title="fullName"
+            item-value="client_id"
+            :return-object="false"
+            label="Клиент"
           />
           <v-select
-            label="Номер"
             v-model="stayForm.room_id"
             :items="availableRooms"
-            :item-text="(r) => 'Room ' + r.room_id"
-            :item-value="(r) => r.room_id"
+            item-title="roomDisplay"
+            item-value="room_id"
+            :return-object="false"
+            label="Номер"
           />
           <v-text-field
             v-model="stayForm.check_in_date"
@@ -104,6 +98,7 @@
 
 <script>
 import axios from 'axios'
+
 export default {
   name: 'Stays',
   data() {
@@ -122,9 +117,9 @@ export default {
     }
   },
   async created() {
-    this.fetchStays()
-    this.fetchClients()
-    this.fetchRooms()
+    await this.fetchStays()
+    await this.fetchClients()
+    await this.fetchRooms()
   },
   methods: {
     async fetchStays() {
@@ -139,35 +134,35 @@ export default {
       }
     },
     async fetchClients() {
-  const token = localStorage.getItem('token')
-  try {
-    const res = await axios.get('http://127.0.0.1:8000/api/clients/', {
-      headers: { Authorization: `Token ${token}` }
-    })
-    this.availableClients = res.data.map((client) => ({
-      client_id: client.client_id,
-      last_name: client.last_name,
-      first_name: client.first_name
-    }))
-  } catch (error) {
-    console.error(error)
-  }
-},
-
-async fetchRooms() {
-  const token = localStorage.getItem('token')
-  try {
-    const res = await axios.get('http://127.0.0.1:8000/api/rooms/', {
-      headers: { Authorization: `Token ${token}` }
-    })
-    this.availableRooms = res.data.map((room) => ({
-      room_id: room.room_id,
-      phone_number: room.phone_number,
-    }))
-  } catch (error) {
-    console.error(error)
-  }
-},
+      const token = localStorage.getItem('token')
+      try {
+        const res = await axios.get('http://127.0.0.1:8000/api/clients/', {
+          headers: { Authorization: `Token ${token}` }
+        })
+        // ВАЖНО: дополнить объекты полем fullName (или любым иным), чтобы Vuetify мог использовать строку
+        this.availableClients = res.data.map(client => ({
+          ...client,
+          fullName: `${client.last_name} ${client.first_name}` || 'NoName'
+        }))
+      } catch (error) {
+        console.error(error)
+      }
+    },
+    async fetchRooms() {
+      const token = localStorage.getItem('token')
+      try {
+        const res = await axios.get('http://127.0.0.1:8000/api/rooms/', {
+          headers: { Authorization: `Token ${token}` }
+        })
+        // Аналогично: поле roomDisplay = "Room 101"
+        this.availableRooms = res.data.map(room => ({
+          ...room,
+          roomDisplay: `Room ${room.room_id}`
+        }))
+      } catch (error) {
+        console.error(error)
+      }
+    },
     openCreateDialog() {
       this.clearForm()
       this.dialog = true
@@ -184,10 +179,12 @@ async fetchRooms() {
     editStay(stay) {
       this.stayForm = {
         stay_id: stay.stay_id,
-        client_id: stay.client.client_id,
-        room_id: stay.room.room_id,
-        check_in_date: stay.check_in_date,
-        check_out_date: stay.check_out_date
+        // Если stay.client имеется, его client_id
+        // иначе null
+        client_id: stay.client ? stay.client.client_id : null,
+        room_id: stay.room ? stay.room.room_id : null,
+        check_in_date: stay.check_in_date || '',
+        check_out_date: stay.check_out_date || ''
       }
       this.dialog = true
     },
