@@ -1,6 +1,8 @@
 <template>
   <v-container>
     <h2 class="mb-4">Номера</h2>
+    
+    <!-- Кнопка для добавления нового номера -->
     <v-btn
       variant="outlined"
       color="primary"
@@ -10,6 +12,7 @@
       Добавить номер
     </v-btn>
 
+    <!-- Список номеров -->
     <v-row>
       <v-col
         v-for="room in rooms"
@@ -21,19 +24,20 @@
         <v-card class="mb-4 elevated-card pa-2">
           <v-card-item>
             <div>
-              <div class="text-h6">Номер: {{ room.room_id }}</div>
+              <div class="text-h6">
+                {{ room.room_type }} - {{ room.is_available ? 'Свободен' : 'Занят' }}
+              </div>
               <div class="text-subtitle-2 mb-2">
-                Тип: {{ room.room_type }}  
+                Этаж - {{ room.floor }} <br>
+                Стоимость в сутки - {{ room.cost_per_day }} <br>
+                Телефон - {{ room.phone_number }}
               </div>
               <div class="text-caption">
-                Этаж: {{ room.floor }} <br>
-                Стоимость в сутки: {{ room.cost_per_day }}  
-              </div>
-              <div class="mt-2">
-                {{ room.is_available ? 'Свободен' : 'Занят' }}
+                ID - {{ room.room_id }} 
               </div>
             </div>
           </v-card-item>
+          <!-- Действия с номером -->
           <v-card-actions>
             <v-btn
               variant="outlined"
@@ -54,12 +58,14 @@
       </v-col>
     </v-row>
 
-      <v-dialog
+    <!-- Диалоговое окно для создания/редактирования номера -->
+    <v-dialog
       v-model="dialog"
       max-width="600px"
       persistent
-      >
+    >
       <v-card class="dialog-card pa-6">
+        <!-- Заголовок диалога -->
         <v-card-title class="my-dialog-title dialog-title">
           {{ roomForm.room_id ? 'Редактирование номера' : 'Новый номер' }}
         </v-card-title>
@@ -95,6 +101,7 @@
           ></v-text-field>
         </v-card-text>
         <v-divider></v-divider>
+        <!-- Действия в диалоге -->
         <v-card-actions class="d-flex justify-end">
           <v-btn
             variant="outlined"
@@ -113,7 +120,7 @@
           </v-btn>
         </v-card-actions>
       </v-card>
-      </v-dialog>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -169,18 +176,17 @@ export default {
       this.roomForm = { ...room }
       this.dialog = true
     },
+    // Создание или обновление номера
     async createOrUpdateRoom() {
       const token = localStorage.getItem('token')
       try {
         if (this.roomForm.room_id) {
-          // update
           await axios.put(
             `http://127.0.0.1:8000/api/rooms/${this.roomForm.room_id}/`,
             this.roomForm,
             { headers: { Authorization: `Token ${token}` } }
           )
         } else {
-          // create
           await axios.post(
             'http://127.0.0.1:8000/api/rooms/',
             this.roomForm,
@@ -193,6 +199,7 @@ export default {
         console.error(error)
       }
     },
+    // Удаление номера по ID
     async deleteRoom(id) {
       const token = localStorage.getItem('token')
       try {

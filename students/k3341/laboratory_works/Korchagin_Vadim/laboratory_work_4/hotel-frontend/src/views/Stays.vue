@@ -21,17 +21,16 @@
         <v-card class="mb-4 elevated-card pa-2">
           <v-card-item>
             <div>
-              <div class="text-h6">ID: {{ stay.stay_id }}</div>
+              <div class="text-h6">
+                {{ stay.client?.last_name }} {{ stay.client?.first_name }} {{ stay.client?.middle_name }} - Номер {{ stay.room?.room_id }}
+              </div>
               <div class="text-subtitle-2 mb-2">
-                Клиент: {{ stay.client?.last_name }} {{ stay.client?.first_name }}
-                (ID {{ stay.client?.client_id }})
-              </div>
-              <div class="text-caption">
-                Номер: {{ stay.room?.room_id }}
-              </div>
-              <div class="mt-2">
                 Дата заезда: {{ stay.check_in_date }}<br/>
                 Дата выезда: {{ stay.check_out_date }}
+              </div>
+              <div class="text-caption">
+                Client ID: {{ stay.stay_id }} <br/>
+                Stay ID - {{ stay.client?.client_id }}
               </div>
             </div>
           </v-card-item>
@@ -139,10 +138,9 @@ export default {
         const res = await axios.get('http://127.0.0.1:8000/api/clients/', {
           headers: { Authorization: `Token ${token}` }
         })
-        // ВАЖНО: дополнить объекты полем fullName (или любым иным), чтобы Vuetify мог использовать строку
         this.availableClients = res.data.map(client => ({
           ...client,
-          fullName: `${client.last_name} ${client.first_name}` || 'NoName'
+          fullName: `${client.last_name} ${client.first_name} ${client.middle_name}` || 'NoName'
         }))
       } catch (error) {
         console.error(error)
@@ -154,7 +152,6 @@ export default {
         const res = await axios.get('http://127.0.0.1:8000/api/rooms/', {
           headers: { Authorization: `Token ${token}` }
         })
-        // Аналогично: поле roomDisplay = "Room 101"
         this.availableRooms = res.data.map(room => ({
           ...room,
           roomDisplay: `Room ${room.room_id}`
@@ -179,8 +176,6 @@ export default {
     editStay(stay) {
       this.stayForm = {
         stay_id: stay.stay_id,
-        // Если stay.client имеется, его client_id
-        // иначе null
         client_id: stay.client ? stay.client.client_id : null,
         room_id: stay.room ? stay.room.room_id : null,
         check_in_date: stay.check_in_date || '',

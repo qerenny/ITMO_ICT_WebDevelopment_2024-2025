@@ -3,13 +3,15 @@
     <v-card
       class="pa-5 elevated-card"
       width="400"
-      height="200"
+      height="215"
     >
-      <h2>Добро пожаловать в гостиницу!</h2>
-      <p>Здесь можно управлять клиентами, сотрудниками, номерами и т. д.</p>
-      <v-btn variant="outlined" color="primary" to="/profile" >
-        Перейти к профилю
-      </v-btn>
+      <h2 class="text-center">Добро пожаловать в гостиницу!</h2>
+      <p class="text-center">Здесь можно управлять клиентами, сотрудниками, номерами и т. д.</p>
+      <div class="d-flex justify-center mt-4">
+        <v-btn variant="elevated" color="primary" to="/profile">
+          Перейти к профилю
+        </v-btn>
+      </div>
     </v-card>
   </v-container>
 </template>

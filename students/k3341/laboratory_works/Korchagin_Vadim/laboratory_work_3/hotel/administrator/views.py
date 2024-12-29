@@ -1,4 +1,5 @@
 from rest_framework import viewsets, filters
+from rest_framework import status
 from rest_framework.decorators import action
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.permissions import IsAuthenticated
@@ -44,6 +45,24 @@ class ClientViewSet(viewsets.ModelViewSet):
         
         count = Client.objects.filter(city_of_origin=city).count()
         return Response({'city': city, 'client_count': count})
+    
+    @action(detail=False, methods=['get'], url_path='me')
+    def me(self, request):
+        """
+        Возвращает объект Client, связанный с текущим пользователем.
+        Предполагается, что в модели Client есть поле user = OneToOneField(User).
+        """
+        if not request.user.is_authenticated:
+            return Response({'detail': 'Unauthorized'}, status=status.HTTP_401_UNAUTHORIZED)
+        
+        # Пытаемся найти Client, связанного с request.user
+        try:
+            client = Client.objects.get(user=request.user)
+        except Client.DoesNotExist:
+            return Response({'detail': 'Данные клиента не найдены'}, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = self.get_serializer(client)
+        return Response(serializer.data, status=status.HTTP_200_OK)
     
     @action(detail=False, methods=['get'])
     def clients_shared_stay(self, request):
@@ -132,6 +151,26 @@ class StayViewSet(viewsets.ModelViewSet):
         instance.delete()
         room.is_available = True
         room.save()
+    
+    @action(detail=False, methods=['get'], url_path='user')
+    def user(self, request):
+        """
+        Возвращает список всех Stay (проживаний) текущего пользователя.
+        """
+        if not request.user.is_authenticated:
+            return Response({'detail': 'Unauthorized'}, status=status.HTTP_401_UNAUTHORIZED)
+        
+        # Ищем Client, связанный с пользователем:
+        try:
+            client = Client.objects.get(user=request.user)
+        except Client.DoesNotExist:
+            # Если у пользователя нет Client, вернём пустой список
+            return Response([], status=status.HTTP_200_OK)
+        
+        # Выбираем все Stay, связанные с этим client:
+        user_stays = Stay.objects.filter(client=client).select_related('room')
+        serializer = self.get_serializer(user_stays, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 class CleaningScheduleViewSet(viewsets.ModelViewSet):
     queryset = CleaningSchedule.objects.all()

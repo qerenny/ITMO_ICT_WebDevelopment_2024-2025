@@ -6,7 +6,7 @@
         Пожалуйста, выберите, что вы хотите сделать:
       </p>
       <v-btn
-        variant="outlined"
+        variant="elevated"
         color="primary"
         class="mb-2"
         block
@@ -15,8 +15,8 @@
         Войти
       </v-btn>
       <v-btn
-        variant="outlined"
-        color="primary"
+        variant="flat"
+        color="warning"
         block
         @click="goToRegister"
       >

@@ -5,11 +5,12 @@
 
     <v-btn text to="/">Главная</v-btn>
     <v-btn text to="/profile">Профиль</v-btn>
-    <v-btn text to="/clients">Клиенты</v-btn>
     
+    <!-- Кнопки для сотрудников, отображаются только если пользователь является сотрудником -->
     <template v-if="userData.is_staff">
       <v-btn text to="/staff">Сотрудники</v-btn>
       <v-btn text to="/rooms">Номера</v-btn>
+      <v-btn text to="/clients">Клиенты</v-btn>
       <v-btn text to="/stays">Проживания</v-btn>
       <v-btn text to="/cleanings">Уборки</v-btn>
       <v-btn text to="/schedules">Расписания</v-btn>
@@ -32,9 +33,10 @@ export default {
     }
   },
   created() {
+    // Получение токена из локального хранилища при создании компонента
     this.token = localStorage.getItem('token')
     if (this.token) {
-      this.fetchUser()
+      this.fetchUser() // Если токен существует, получить данные пользователя
     }
   },
   methods: {
@@ -45,14 +47,15 @@ export default {
         })
         this.userData = response.data
       } catch (error) {
-        console.error(error)
+        console.error(error) 
       }
     },
     logout() {
+      // Удаление токена и данных пользователя при выходе
       localStorage.removeItem('token')
       this.token = null
       this.userData = {}
-      this.$router.push('/start')
+      this.$router.push('/start') 
     }
   }
 }

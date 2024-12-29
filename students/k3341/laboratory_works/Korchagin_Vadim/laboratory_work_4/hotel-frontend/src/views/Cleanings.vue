@@ -2,7 +2,7 @@
   <v-container>
     <h2 class="mb-4">Уборки (CleaningExecution)</h2>
 
-    <!-- staff_cleaned_client_room -->
+    <!-- Карточка для поиска сотрудников, убирающих номер клиента в определенный день недели -->
     <v-card class="mb-4 pa-2 elevated-card">
       <v-card-title class="text-h6">Кто убирал номер клиента в день недели</v-card-title>
       <v-card-text>
@@ -32,6 +32,7 @@
       </v-card-subtitle>
     </v-card>
 
+    <!-- Кнопка для открытия диалога добавления новой уборки -->
     <v-btn
       variant="outlined"
       color="primary"
@@ -41,6 +42,7 @@
       Добавить запись об уборке
     </v-btn>
 
+    <!-- Список всех уборок -->
     <v-row>
       <v-col
         v-for="cleaning in cleanings"
@@ -52,15 +54,16 @@
         <v-card class="elevated-card mb-4 pa-2">
           <v-card-item>
             <div>
-              <div class="text-h6">ID: {{ cleaning.cleaning_execution_id }}</div>
+              <div class="text-h6">
+                Этаж - {{ cleaning.floor }} - {{ cleaning.time_and_day_of_week }}
+              </div>
               <div class="text-subtitle-2 mb-2">
-                Schedule ID: {{ cleaning.cleaning_schedule?.cleaning_schedule_id }}
+                Сотрудник - {{ cleaning.staff?.last_name }} {{ cleaning.staff?.first_name }} {{ cleaning.staff?.middle_name }} <br>
+                Комната - {{ cleaning.room?.room_id }}
               </div>
               <div class="text-caption">
-                Сотрудник: {{ cleaning.staff?.last_name }} {{ cleaning.staff?.first_name }} <br>
-                Комната: {{ cleaning.room?.room_id }} <br>
-                Этаж: {{ cleaning.floor }} <br>
-                День недели: {{ cleaning.time_and_day_of_week }}
+                Execution ID - {{ cleaning.cleaning_execution_id }} <br>
+                Schedule ID - {{ cleaning.cleaning_schedule?.cleaning_schedule_id }}
               </div>
             </div>
           </v-card-item>
@@ -84,8 +87,7 @@
       </v-col>
     </v-row>
 
-
-    <!-- Диалог -->
+    <!-- Диалог для добавления/редактирования уборки -->
     <v-dialog
       v-model="dialog"
       max-width="600px"
@@ -96,7 +98,6 @@
           {{ cleaningForm.cleaning_execution_id ? 'Редактирование' : 'Новая' }} уборка
         </v-card-title>
         <v-card-text>
-          <!-- Обязательное поле cleaning_schedule_id -->
           <v-select
             v-model="cleaningForm.cleaning_schedule_id"
             :items="scheduleList"
@@ -105,7 +106,6 @@
             :return-object="false"
             label="Cleaning Schedule ID"
           />
-          <!-- staff -->
           <v-select
             v-model="cleaningForm.staff_id"
             :items="staffList"
@@ -114,7 +114,6 @@
             :return-object="false"
             label="Сотрудник"
           />
-          <!-- room -->
           <v-select
             v-model="cleaningForm.room_id"
             :items="roomsList"
@@ -158,18 +157,16 @@ export default {
       dialog: false,
       cleaningForm: {
         cleaning_execution_id: null,
-        cleaning_schedule_id: null, // обязательный
+        cleaning_schedule_id: null, 
         staff_id: null,
         room_id: null,
         floor: 1,
         time_and_day_of_week: ''
       },
-      scheduleList: [], // для cleaning_schedule
+      scheduleList: [],
       staffList: [],
       roomsList: [],
 
-
-      // для staff_cleaned_client_room
       cleaningParams: {
         client_id: '',
         day_of_week: ''
@@ -184,6 +181,7 @@ export default {
     await this.fetchSchedules()
   },
   methods: {
+    // Получение списка всех уборок
     async fetchCleanings() {
       const token = localStorage.getItem('token')
       try {
@@ -195,6 +193,7 @@ export default {
         console.error(error)
       }
     },
+    // Получение списка расписаний уборок
     async fetchSchedules() {
       const token = localStorage.getItem('token')
       try {
@@ -208,6 +207,7 @@ export default {
         console.error(error)
       }
     },
+    // Получение списка сотрудников
     async fetchStaff() {
       const token = localStorage.getItem('token')
       try {
@@ -216,12 +216,13 @@ export default {
         })
         this.staffList = res.data.map(stuff => ({
           ...stuff,
-          fullName: `${stuff.last_name} ${stuff.first_name}` || 'NoName'
+          fullName: `${stuff.last_name} ${stuff.first_name} ${stuff.middle_name}` || 'NoName'
         }))
       } catch (error) {
         console.error(error)
       }
     },
+    // Получение списка комнат
     async fetchRooms() {
       const token = localStorage.getItem('token')
       try {
@@ -236,6 +237,7 @@ export default {
         console.error(error)
       }
     },
+    // Открытие диалога для добавления новой уборки
     openDialog() {
       this.cleaningForm = {
         cleaning_execution_id: null,
@@ -247,6 +249,7 @@ export default {
       }
       this.dialog = true
     },
+    // Открытие диалога для редактирования уборки
     editCleaning(item) {
       this.cleaningForm = {
         cleaning_execution_id: item.cleaning_execution_id,
@@ -258,18 +261,17 @@ export default {
       }
       this.dialog = true
     },
+    // Создание или обновление уборки
     async createOrUpdateCleaning() {
       const token = localStorage.getItem('token')
       try {
         if (this.cleaningForm.cleaning_execution_id) {
-          // update
           await axios.put(
             `http://127.0.0.1:8000/api/cleaning-executions/${this.cleaningForm.cleaning_execution_id}/`,
             this.cleaningForm,
             { headers: { Authorization: `Token ${token}` } }
           )
         } else {
-          // create
           await axios.post(
             'http://127.0.0.1:8000/api/cleaning-executions/',
             this.cleaningForm,
@@ -282,6 +284,7 @@ export default {
         console.error(error)
       }
     },
+    // Удаление уборки
     async deleteCleaning(id) {
       const token = localStorage.getItem('token')
       try {
@@ -293,8 +296,7 @@ export default {
         console.error(error)
       }
     },
-
-    // staff_cleaned_client_room
+    // Поиск сотрудников, убирающих номер клиента в определенный день недели
     async staffCleanedClientRoom() {
       const token = localStorage.getItem('token')
       const { client_id, day_of_week } = this.cleaningParams

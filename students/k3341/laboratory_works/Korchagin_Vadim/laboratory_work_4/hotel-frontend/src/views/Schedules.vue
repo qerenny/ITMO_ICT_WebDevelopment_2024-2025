@@ -1,6 +1,8 @@
 <template>
   <v-container>
     <h2 class="mb-4">Расписания уборок</h2>
+    
+    <!-- Кнопка для добавления нового расписания -->
     <v-btn
       variant="outlined"
       color="primary"
@@ -10,6 +12,7 @@
       Добавить расписание
     </v-btn>
 
+    <!-- Список расписаний -->
     <v-row>
       <v-col
         v-for="schedule in schedules"
@@ -21,17 +24,20 @@
         <v-card class="mb-4 elevated-card pa-2">
           <v-card-item>
             <div>
-              <div class="text-h6">ID: {{ schedule.cleaning_schedule_id }}</div>
+              <div class="text-h6">
+                Этаж: {{ schedule.floor }} - {{ schedule.time_and_day_of_week }}
+              </div>
               <div class="text-subtitle-2 mb-2">
-                Сотрудник: {{ schedule.staff?.last_name }} {{ schedule.staff?.first_name }}
+                Комната: {{ schedule.room?.room_id }} <br>
+                Сотрудник: {{ schedule.staff?.last_name }} {{ schedule.staff?.first_name }} {{ schedule.staff?.middle_name }}
               </div>
               <div class="text-caption">
-                Комната: {{ schedule.room?.room_id }} <br>
-                Этаж: {{ schedule.floor }} <br>
-                {{ schedule.time_and_day_of_week }}
+                ID: {{ schedule.cleaning_schedule_id }}
               </div>
             </div>
           </v-card-item>
+          
+          <!-- Действия с расписанием -->
           <v-card-actions>
             <v-btn
               variant="outlined"
@@ -52,7 +58,7 @@
       </v-col>
     </v-row>
 
-    <!-- Диалог -->
+    <!-- Диалоговое окно для создания или редактирования расписания -->
     <v-dialog
       v-model="dialog"
       max-width="600px"
@@ -128,6 +134,7 @@ export default {
     this.fetchRooms()
   },
   methods: {
+    // Получение списка расписаний
     async fetchSchedules() {
       const token = localStorage.getItem('token')
       try {
@@ -139,6 +146,7 @@ export default {
         console.error(error)
       }
     },
+    // Получение списка сотрудников
     async fetchStaff() {
       const token = localStorage.getItem('token')
       try {
@@ -147,12 +155,13 @@ export default {
         })
         this.staffList = res.data.map(stuff => ({
           ...stuff,
-          fullName: `${stuff.last_name} ${stuff.first_name}` || 'NoName'
+          fullName: `${stuff.last_name} ${stuff.first_name} ${stuff.middle_name}` || 'NoName'
         }))
       } catch (error) {
         console.error(error)
       }
     },
+    // Получение списка комнат
     async fetchRooms() {
       const token = localStorage.getItem('token')
       try {
@@ -167,6 +176,7 @@ export default {
         console.error(error)
       }
     },
+    // Открытие диалогового окна
     openDialog() {
       this.scheduleForm = {
         cleaning_schedule_id: null,
@@ -177,6 +187,7 @@ export default {
       }
       this.dialog = true
     },
+    // Редактирование расписания
     editSchedule(item) {
       this.scheduleForm = {
         cleaning_schedule_id: item.cleaning_schedule_id,
@@ -187,6 +198,7 @@ export default {
       }
       this.dialog = true
     },
+    // Создание или обновление расписания
     async createOrUpdateSchedule() {
       const token = localStorage.getItem('token')
       try {
@@ -209,6 +221,7 @@ export default {
         console.error(error)
       }
     },
+    // Удаление расписания
     async deleteSchedule(id) {
       const token = localStorage.getItem('token')
       try {

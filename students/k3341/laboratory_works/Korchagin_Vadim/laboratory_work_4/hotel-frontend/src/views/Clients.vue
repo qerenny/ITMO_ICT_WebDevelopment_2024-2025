@@ -41,6 +41,7 @@
       </v-card-subtitle>
     </v-card>
 
+    <!-- Кнопка для добавления клиента -->
     <v-btn
       variant="outlined"
       color="primary"
@@ -50,6 +51,7 @@
       Добавить клиента
     </v-btn>
 
+    <!-- Список клиентов -->
     <v-row>
       <v-col
         v-for="client in clients"
@@ -61,9 +63,14 @@
         <v-card class="elevated-card mb-4 pa-2">
           <v-card-item>
             <div>
-              <div class="text-h6">{{ client.last_name }} {{ client.first_name }}</div>
-              <div class="text-subtitle-2 mb-2">Паспорт: {{ client.passport_number }}</div>
-              <div class="text-caption">Город: {{ client.city_of_origin }}</div>
+              <div class="text-h6">{{ client.last_name }} {{ client.first_name }} {{ client.middle_name }}</div>
+              <div class="text-subtitle-2 mb-2">
+                Паспорт - {{ client.passport_number }}<br>
+                Город - {{ client.city_of_origin }}
+              </div>
+              <div class="text-caption">
+                Clinet ID - {{ client.client_id }}
+              </div>
             </div>
           </v-card-item>
           <v-card-actions>
@@ -86,7 +93,7 @@
       </v-col>
     </v-row>
 
-    <!-- Диалог -->
+    <!-- Диалог для создания/редактирования клиента -->
     <v-dialog
       v-model="dialog"
       max-width="600px"
@@ -161,6 +168,7 @@ export default {
     this.fetchClients()
   },
   methods: {
+    // Получение списка клиентов
     async fetchClients() {
       const token = localStorage.getItem('token')
       try {
@@ -172,10 +180,12 @@ export default {
         console.error(error)
       }
     },
+    // Открытие диалога для создания клиента
     openCreateDialog() {
       this.clearForm()
       this.dialog = true
     },
+    // Очистка формы клиента
     clearForm() {
       this.clientForm = {
         client_id: null,
@@ -186,10 +196,12 @@ export default {
         city_of_origin: ''
       }
     },
+    // Редактирование клиента
     editClient(client) {
       this.clientForm = { ...client }
       this.dialog = true
     },
+    // Создание или обновление клиента
     async createOrUpdateClient() {
       const token = localStorage.getItem('token')
       try {
@@ -212,6 +224,7 @@ export default {
         console.error(error)
       }
     },
+    // Удаление клиента
     async deleteClient(clientId) {
       const token = localStorage.getItem('token')
       try {
@@ -223,6 +236,7 @@ export default {
         console.error(error)
       }
     },
+    // Подсчет клиентов по городу
     async countByCity() {
       const token = localStorage.getItem('token')
       if (!this.cityParam) return
@@ -235,6 +249,7 @@ export default {
         console.error(error)
       }
     },
+    // Получение пересекающихся проживаний
     async clientsSharedStay() {
       const token = localStorage.getItem('token')
       if (!this.sharedClientId) return

@@ -1,6 +1,7 @@
 <template>
   <v-container>
     <h2 class="mb-4">Сотрудники</h2>
+    <!-- Кнопка для открытия диалога создания сотрудника -->
     <v-btn
       variant="outlined"
       color="primary"
@@ -21,12 +22,9 @@
         <v-card class="mb-4 elevated-card pa-2">
           <v-card-item>
             <div>
-              <div class="text-h6">{{ person.last_name }} {{ person.first_name }}</div>
-              <div class="text-subtitle-2 mb-2">
-                ID: {{ person.staff_id }}
-              </div>
+              <div class="text-h6">{{ person.last_name }} {{ person.first_name }} {{ person.middle_name }}</div>
               <div class="text-caption" v-if="person.middle_name">
-                Отчество: {{ person.middle_name }}
+                ID: {{ person.staff_id }}
               </div>
             </div>
           </v-card-item>
@@ -91,6 +89,7 @@ export default {
     this.fetchStaff()
   },
   methods: {
+    // Метод для получения списка сотрудников
     async fetchStaff() {
       const token = localStorage.getItem('token')
       try {
@@ -102,10 +101,12 @@ export default {
         console.error(error)
       }
     },
+    // Открытие диалога для создания нового сотрудника
     openCreateDialog() {
       this.clearForm()
       this.dialog = true
     },
+    // Очистка формы
     clearForm() {
       this.staffForm = {
         staff_id: null,
@@ -114,10 +115,12 @@ export default {
         middle_name: ''
       }
     },
+    // Открытие диалога для редактирования существующего сотрудника
     editStaff(person) {
       this.staffForm = { ...person }
       this.dialog = true
     },
+    // Метод для создания или обновления сотрудника
     async createOrUpdateStaff() {
       const token = localStorage.getItem('token')
       try {
@@ -136,6 +139,7 @@ export default {
         console.error(error)
       }
     },
+    // Метод для удаления сотрудника
     async deleteStaff(id) {
       const token = localStorage.getItem('token')
       try {

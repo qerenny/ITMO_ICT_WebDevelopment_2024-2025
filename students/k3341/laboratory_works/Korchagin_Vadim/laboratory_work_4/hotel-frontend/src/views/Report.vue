@@ -1,7 +1,8 @@
 <template>
   <v-container>
     <h2 class="mb-4">Отчёт по гостинице</h2>
-        <v-card variant="eleveated" :elevation="4" class="pa-4 mb-4">
+    <!-- Карточка для выбора квартала и кнопки формирования отчета -->
+    <v-card variant="eleveated" :elevation="4" class="pa-4 mb-4">
       <v-select
         :items="[1,2,3,4]"
         v-model="selectedQuarter"
@@ -18,6 +19,7 @@
       </v-btn>
     </v-card>
 
+    <!-- Карточка для отображения данных отчета -->
     <v-card
       v-if="reportData"
       variant="elevated"
@@ -65,8 +67,8 @@ export default {
   name: 'Report',
   data() {
     return {
-      selectedQuarter: null,
-      reportData: null
+      selectedQuarter: null, // Выбранный квартал
+      reportData: null // Данные отчета
     }
   },
   methods: {
@@ -87,8 +89,3 @@ export default {
 }
 </script>
 
-<style scoped>
-.fill-height {
-  height: 100vh;
-}
-</style>

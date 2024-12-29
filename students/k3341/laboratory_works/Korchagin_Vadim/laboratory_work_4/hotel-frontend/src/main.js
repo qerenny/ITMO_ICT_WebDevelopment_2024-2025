@@ -24,7 +24,7 @@ const myHotelTheme = {
     error: '#D32F2F',
     info: '#2D9CDB',
     success: '#27AE60',
-    warning: '#F2C94C',
+    warning: '#CFCFCF',
   },
   variables: {
     'border-color': '#000000',
